@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="space-y-8">
+    <!-- Top -->
+    <div class="flex items-start justify-between">
+      <div>
+        <h2 class="text-xl font-bold">Results</h2>
+        <p class="text-sm text-slate-600">Scores range 0–1 (rounded to 3 decimals).</p>
+      </div>
+      <a href="/" class="px-3 py-2 rounded-xl border border-slate-200 hover:bg-white/60 text-sm">Evaluate another answer</a>
+    </div>
+
+    <!-- Score cards -->
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="p-5 rounded-2xl border border-slate-200 bg-white/70 backdrop-blur-sm shadow-sm">
+        <div class="text-slate-500 text-sm">Overall score</div>
+        <div class="mt-1 text-3xl font-extrabold">{{ final_score if final_score is not none else '—' }}</div>
+        {% if final_score is not none %}
+        <div class="mt-3 w-full bg-slate-100/80 rounded-full h-2">
+          <div class="h-2 rounded-full bg-emerald-500" style="width: {{ (final_score*100)|round(0,'floor') }}%"></div>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="p-5 rounded-2xl border border-slate-200 bg-white/70 backdrop-blur-sm shadow-sm">
+        <div class="text-slate-500 text-sm">Cleanlab TLM trust score</div>
+        <div class="mt-1 text-3xl font-extrabold">{{ s_tlm if s_tlm is not none else '—' }}</div>
+        {% if tlm_explain %}
+          <div class="mt-2 text-xs text-slate-600 leading-relaxed">Explanation: {{ tlm_explain }}</div>
+        {% elif s_tlm is none %}
+          <div class="mt-2 text-xs text-slate-400">TLM scoring disabled (no API key set).</div>
+        {% endif %}
+      </div>
+
+      <div class="p-5 rounded-2xl border border-slate-200 bg-white/70 backdrop-blur-sm shadow-sm">
+        <div class="text-slate-500 text-sm">Literature agreement (NLI)</div>
+        <div class="mt-1 text-3xl font-extrabold">{{ s_lit if s_lit is not none else '—' }}</div>
+        <div class="mt-2 text-xs text-slate-600">Quantifies how much the papers’ abstracts support or contradict the answer.</div>
+      </div>
+    </div>
+
+    <!-- Expert summary -->
+    <section class="space-y-2">
+      <h3 class="text-lg font-semibold">Expert conclusions from literature</h3>
+      <div class="prose max-w-none whitespace-pre-wrap leading-relaxed text-sm">{{ expert_summary }}</div>
+    </section>
+
+    <!-- Evidence -->
+    <section class="space-y-2">
+      <h3 class="text-lg font-semibold">Evidence (top papers)</h3>
+      <div class="grid gap-3">
+        {% for p in papers %}
+        <div class="p-4 rounded-2xl border border-slate-200 bg-white/70 backdrop-blur-sm hover:bg-white/80 transition">
+          <div class="flex items-center justify-between gap-4">
+            <div class="font-semibold">{{ p.title }}</div>
+            <span class="text-xs px-2 py-1 rounded-full border bg-slate-50">{{ p.verdict }}</span>
+          </div>
+          <div class="text-xs text-slate-600 mt-1">{{ p.venue }} · {{ p.year }} · Citations: {{ p.citations }} · Source: {{ p.source }}</div>
+          <div class="text-xs mt-2">
+            DOI: {% if p.doi %}<a class="text-blue-600 hover:underline" href="https://doi.org/{{ p.doi }}" target="_blank">{{ p.doi }}</a>{% else %}—{% endif %}
+            · Link: {% if p.url %}<a class="text-blue-600 hover:underline" href="{{ p.url }}" target="_blank">Open</a>{% else %}—{% endif %}
+          </div>
+          <div class="text-xs text-slate-600 mt-2">P(entail)={{ p.p_entail }} · P(contradict)={{ p.p_contra }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+{% endblock %}

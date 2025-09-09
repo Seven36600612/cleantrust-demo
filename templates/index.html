@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+  <form id="formEval" method="post" action="/evaluate" class="space-y-5">
+    <div>
+      <label class="block text-sm font-semibold mb-2">Your question</label>
+      <textarea name="question" class="w-full rounded-2xl border border-slate-200 p-4 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                rows="3" placeholder="e.g., How many hours of sleep are recommended for adults each day?"></textarea>
+    </div>
+    <div>
+      <label class="block text-sm font-semibold mb-2">AI answer</label>
+      <textarea name="answer" class="w-full rounded-2xl border border-slate-200 p-4 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                rows="6" placeholder="Paste the AI answer you want to evaluate here"></textarea>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <p class="text-xs text-slate-600">Tip: set <code>CLEANLAB_TLM_API_KEY</code> to enable TLM scoring.</p>
+      <button id="btnEval" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-slate-900 text-white hover:bg-slate-800 active:scale-[.98] transition">
+        <svg id="spinner" class="hidden animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4A4 4 0 008 12H4z"></path></svg>
+        <span>Evaluate</span>
+      </button>
+    </div>
+  </form>
+
+  <script>
+    // button loading state
+    const form = document.getElementById('formEval');
+    const btn = document.getElementById('btnEval');
+    const spn = document.getElementById('spinner');
+    form.addEventListener('submit', () => { btn.disabled = true; spn.classList.remove('hidden'); });
+  </script>
+{% endblock %}
